@@ -1,0 +1,72 @@
+-- 1 - Mostrar las reparaciones mayores de $1000
+SELECT descripcion, importe, fecha_entrada, fecha_salida 
+FROM reparaciones 
+WHERE importe > 1000;
+
+-- 2 - Mostrar las reparaciones comprendidas en el primer semestre de 2020
+SELECT descripcion, importe, fecha_entrada, fecha_salida 
+FROM reparaciones 
+WHERE year(fecha_entrada)=2020 AND month(fecha_entrada) BETWEEN 1 and 6 ; 
+
+-- 3 - Mostrar el total facturado en cada mes
+SELECT monthname(fecha_entrada), SUM(importe) 
+FROM reparaciones 
+GROUP BY month(fecha_entrada);
+
+-- 4 - Mostrar la cantidad de reparaciones de cada mecánico
+
+-- ojo aca!
+
+SELECT count(reparaciones), nombre 
+FROM reparaciones INER JOIN mecanicos ON fk_mecanico=pk_mecanico 
+GROUP BY apellido;
+
+-- 5 - Mostrar la cantidad de reparaciones de cada marca
+SELECT marca, count(descripcion) cant 
+FROM reparaciones INNER JOIN AUTOMOTORES ON fk_automotor=pk_automotor 
+INNER JOIN marcas ON pk_marca = fk_marca 
+GROUP BY marca
+
+-- 6 - Mostrar las 3 reparaciones que más tiempo tardaron
+SELECT descripcion , fecha_entrada, fecha_salida, datediff(fecha_salida, fecha_entrada) as 'cant dias'
+FROM reparaciones
+ORDER BY datediff(fecha_salida, fecha_entrada) DESC
+LIMIT 3
+
+-- 7 - Borrar las reparaciones menores a $100
+DELETE FROM reparaciones WHERE importe<100;
+
+-- 8 - Incrementar el importe de las reparaciones en un 10%, solo de aquellas que son de tipo camión.
+UPDATE reparaciones  
+reparaciones INNER JOIN automotores ON pk_automotor=fk_automotor
+INNER JOIN tipos ON pk_tipo = fk_tipo
+SET importe=round(importe*1.1, 1) 
+WHERE tipo="camion";
+
+-- 9 - De cada mecánico, mostrar apellido, nombre, cantidad de reparaciones e importe total de reparaciones
+SELECT apellido, nombre, count(pk_reparacion) cantidad, sum(importe) 'importe total'
+FROM reparaciones INNER JOIN mecanicos ON pk_mecanico=fk_mecanico
+GROUP BY apellido;
+
+-- 10  - Mostrar los automotores que son de la marca Peugeot, Renault o Fiat
+-- CUIDADO! RENAULT TIENE COMILLAS
+
+
+SELECT patente, marca, tipo
+FROM automotores INNER JOIN marcas ON pk_marca=fk_marca 
+INNER JOIN tipos ON pk_tipo=fk_tipo
+WHERE marca='Peugeot' or marca="'Renault'" or marca='Fiat';
+
+-- 10 V2 otra forma de hacer el 10
+SELECT patente, marca, tipo
+FROM automotores INNER JOIN marcas ON pk_marca=fk_marca 
+INNER JOIN tipos ON pk_tipo=fk_tipo
+WHERE marca LIKE '%Peugeot%' or marca LIKE '%Renault%' or marca LIKE'%Fiat%';
+
+-- 11 - Mostrar los mecánicos que realizaron mas de 3 reparaciones
+
+-- ojo: > 3
+
+SELECT apellido, nombre, count(pk_reparacion) cantidad
+FROM reparaciones INNER JOIN mecanicos ON pk_mecanico=fk_mecanico
+GROUP BY apellido HAVING count(pk_reparacion)>=3;

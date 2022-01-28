@@ -109,4 +109,13 @@ public class DataBase {
         this.disconnect();
         return contact;
     }
+
+    public void updateEmail(String table, Contact contact, String newEmail) throws SQLException {
+        String query = "UPDATE " + table + " SET email = '" + newEmail + "' WHERE email = '" + contact.getEmail() + "'";
+
+        this.connect();
+        this.statement = this.connection.createStatement();
+        this.statement.execute(query);
+        this.disconnect();
+    }
 }

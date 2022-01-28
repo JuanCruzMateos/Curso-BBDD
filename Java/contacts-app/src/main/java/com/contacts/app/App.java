@@ -2,9 +2,7 @@ package com.contacts.app;
 
 import java.sql.SQLException;
 
-/**
- * Hello world!
- */
+
 public class App {
     public static void main(String[] args) throws SQLException {
         final String TABLE_NAME = "personas";
